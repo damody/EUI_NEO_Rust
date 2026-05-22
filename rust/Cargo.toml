@@ -1,0 +1,9 @@
+[package]
+name = "eui-neo-rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+glfw = "0.62"
+gl = "0.14"
+fontdue = "0.9"
