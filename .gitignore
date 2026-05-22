@@ -5,3 +5,9 @@ out/
 *.suo
 *.db
 .cache/
+nul
+eui_dump_cpp.json
+rust/target/
+rust/eui_dump*.json
+rust/*stdout.txt
+rust/*stderr.txt
