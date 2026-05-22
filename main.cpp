@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 #include "src/EUINEO.h"
 #include "src/pages/MainPage.h"
+#include "src/debug/DrawCommandDump.h"
 
 namespace {
 
@@ -169,6 +170,9 @@ int main() {
             if (action == GLFW_PRESS) {
                 EUINEO::State.keys[key] = true;
                 EUINEO::State.keysPressed[key] = true;
+                if (key == GLFW_KEY_F12) {
+                    EUINEO::DumpState::BeginRecording();
+                }
                 EUINEO::Renderer::RequestRepaint();
             } else if (action == GLFW_RELEASE) {
                 EUINEO::State.keys[key] = false;
@@ -244,6 +248,11 @@ int main() {
     EUINEO::Renderer::RegisterFontSource("C:/Windows/Fonts/msyh.ttc", kCjkSdfLoadSize); // Deferred fallback for missing glyphs.
 
     EUINEO::MainPage mainPage{}; // Force recompilation when header-only pages change.
+
+    // Auto-dump: record the very first frame for comparison
+    bool autoDumpDone = false;
+    EUINEO::DumpState::BeginRecording();
+
     double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -267,6 +276,13 @@ int main() {
         if (shouldDraw) {
             EUINEO::State.frameCount++;
             mainPage.Draw();
+            if (EUINEO::DumpState::IsRecording()) {
+                EUINEO::DumpState::EndRecordingAndWrite("eui_dump_cpp.json");
+                if (!autoDumpDone) {
+                    autoDumpDone = true;
+                    glfwSetWindowShouldClose(window, 1);
+                }
+            }
             glfwSwapBuffers(window);
         }
 

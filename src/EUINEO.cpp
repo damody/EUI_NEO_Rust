@@ -7,6 +7,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
+#include "debug/DrawCommandDump.h"
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype.h"
@@ -1766,6 +1767,7 @@ RectBounds Renderer::MeasureRectBounds(float x, float y, float w, float h, const
 }
 
 void Renderer::DrawRect(float x, float y, float w, float h, const RectStyle& style) {
+    if (DumpState::IsRecording()) DumpState::RecordRect(x, y, w, h, style);
     RectBounds bounds = ComputeRectBounds(x, y, w, h, style);
     const bool canReuseBlurCache = CanReuseBlurCache(style);
     if (canReuseBlurCache && CachedBlurMatches(bounds.x, bounds.y, bounds.w, bounds.h, style)) {
@@ -1908,6 +1910,7 @@ void Renderer::DrawPolygon(const std::vector<Point2>& points, const Color& fillC
 
 void Renderer::DrawPolygon(const std::vector<Point2>& points, const Color& fillColor, const RectGradient& gradient,
                            float strokeWidth, const Color& strokeColor) {
+    if (DumpState::IsRecording()) DumpState::RecordPolygon(points, fillColor, gradient, strokeWidth, strokeColor);
     if (points.size() < 3) {
         return;
     }
@@ -1999,6 +2002,7 @@ bool Renderer::LoadFont(const std::string& fontPath, float fontSize, unsigned in
 
 void Renderer::DrawTextStr(const std::string& text, float x, float y, const Color& color, float scale,
                            float rotationDegrees, float pivotX, float pivotY, bool useCustomPivot) {
+    if (DumpState::IsRecording()) DumpState::RecordText(text, x, y, color, scale);
     if (text.empty()) {
         return;
     }
